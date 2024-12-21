@@ -1,0 +1,34 @@
+{
+    "config": {
+        "flow_title": "{name}",
+        "step": {
+            "user": {
+                "title": "Set up Govee Smart Plug",
+                "data": {
+                    "address": "Device address",
+                    "name": "[%key:common::config_flow::data::name%]"
+                }
+            },
+            "link": {
+                "title": "Pair Govee Smart Plug",
+                "description": "Press the button on the outlet to register with Home Assistant."
+            }
+        },
+        "error": {
+            "linking": "Failed to pair, please try again"
+        },
+        "abort": {
+            "already_configured_device": "[%key:common::config_flow::abort::already_configured_device%]",
+            "no_devices_found": "[%key:common::config_flow::abort::no_devices_found%]",
+            "unknown": "[%key:common::config_flow::error::unknown%]",
+            "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]"
+        }
+    },
+    "entity": {
+        "switch": {
+            "power": {
+                "name": "Power"
+            }
+        }
+    }
+}
