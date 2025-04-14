@@ -44,8 +44,3 @@ class GoveePlugEntity(
             model=self.coordinator.api.MODEL,
             name=config_entry.title,
         )
-
-    @property
-    def data(self) -> dict[str, Any]:
-        """Return coordinator data for this entity."""
-        return self.coordinator.data

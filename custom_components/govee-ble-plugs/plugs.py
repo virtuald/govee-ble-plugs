@@ -34,9 +34,7 @@ class GoveePlugApi(T.Protocol):
 
     def is_on(self, port: int) -> bool | None: ...
 
-    def handle_bluetooth_event(
-        self, device: BLEDevice, adv: AdvertisementData
-    ) -> dict[str, T.Any] | None: ...
+    def handle_bluetooth_event(self, device: BLEDevice, adv: AdvertisementData): ...
 
     async def async_turn_on(self, port: int): ...
 
@@ -232,13 +230,10 @@ class GoveePlugH5080(GoveePlugH508x):
     def is_on(self, port: int):
         return self._is_on
 
-    def handle_bluetooth_event(
-        self, device: BLEDevice, adv: AdvertisementData
-    ) -> dict[str, T.Any] | None:
+    def handle_bluetooth_event(self, device: BLEDevice, adv: AdvertisementData):
         for _, mfr_data in adv.manufacturer_data.items():
             self._device = device
             self._is_on = mfr_data[-1] == 0x01
-            return {"is_on": self._is_on}
 
     async def async_turn_on(self, port: int):
         assert port == 0
