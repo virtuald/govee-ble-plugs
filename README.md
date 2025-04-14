@@ -11,6 +11,7 @@ Control your Govee Smart Plugs via BLE directly from HomeAssistant!
 Supported devices:
 
 * H5080 Smart Plug
+* H5082 Dual Smart Plug
 
 ## Configuration
 

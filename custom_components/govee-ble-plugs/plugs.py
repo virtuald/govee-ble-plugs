@@ -52,6 +52,9 @@ def get_api_by_model(model: str, device: BLEDevice, token: str) -> GoveePlugApi:
     if model == "H5080":
         return GoveePlugH5080(device, token)
 
+    if model == "H5082":
+        return GoveePlugH5082(device, token)
+
     raise ConfigEntryError(f"Unsupported model {model}")
 
 
@@ -62,6 +65,14 @@ def get_pair_by_model(model: str, device: BLEDevice) -> GoveePairApi:
             GoveePlugH5080.RECV_CHARACTERISTIC_UUID,
             GoveePlugH5080.SEND_CHARACTERISTIC_UUID,
             GoveePlugH5080.MSG_GET_AUTH_KEY,
+        )
+
+    if model == "H5082":
+        return GoveePlugPairer(
+            device,
+            GoveePlugH5082.RECV_CHARACTERISTIC_UUID,
+            GoveePlugH5082.SEND_CHARACTERISTIC_UUID,
+            GoveePlugH5082.MSG_GET_AUTH_KEY,
         )
 
     raise ConfigEntryError(f"Unsupported model {model}")
@@ -87,6 +98,11 @@ def parse_advertisement_data(
             local_name, device.address, device, GoveePlugH5080.MODEL
         )
 
+    if local_name.startswith("ihoment_H5082_"):
+        return GoveeAdvertisementData(
+            local_name, device.address, device, GoveePlugH5082.MODEL
+        )
+
 
 class GoveePlugH508x:
 
@@ -99,7 +115,6 @@ class GoveePlugH508x:
     ) -> None:
         self._device = device
         self._token = token
-        self._is_on = None
         self._RECV_CHARACTERISTIC_UUID = RECV_CHARACTERISTIC_UUID
         self._SEND_CHARACTERISTIC_UUID = SEND_CHARACTERISTIC_UUID
 
@@ -223,6 +238,7 @@ class GoveePlugH5080(GoveePlugH508x):
         super().__init__(
             device, token, self.RECV_CHARACTERISTIC_UUID, self.SEND_CHARACTERISTIC_UUID
         )
+        self._is_on = None
 
     def port_names(self) -> T.List[T.Tuple[T.Optional[int], T.Optional[str]]]:
         return [(None, None)]
@@ -244,6 +260,60 @@ class GoveePlugH5080(GoveePlugH508x):
         assert port == 0
         if await self._send_message(self.MSG_TURN_OFF):
             self._is_on = False
+
+
+class GoveePlugH5082(GoveePlugH508x):
+    MODEL = "H5082"
+
+    MSG_GET_AUTH_KEY = _b("aab100000000000000000000000000000000001b")
+
+    MSG_LEFT_ON = _b("3301220000000000000000000000000000000010")
+    MSG_LEFT_OFF = _b("3301200000000000000000000000000000000012")
+    MSG_RIGHT_ON = _b("3301110000000000000000000000000000000023")
+    MSG_RIGHT_OFF = _b("3301100000000000000000000000000000000022")
+
+    SEND_CHARACTERISTIC_UUID = "00010203-0405-0607-0809-0a0b0c0d2b11"
+    RECV_CHARACTERISTIC_UUID = "00010203-0405-0607-0809-0a0b0c0d2b10"
+
+    def __init__(self, device: BLEDevice, token: str) -> None:
+        super().__init__(
+            device, token, self.RECV_CHARACTERISTIC_UUID, self.SEND_CHARACTERISTIC_UUID
+        )
+        self._is_on: T.List[T.Optional[bool]] = [None, None]
+
+    def port_names(self) -> T.List[T.Tuple[T.Optional[int], T.Optional[str]]]:
+        return [(0, "Left Power"), (1, "Right Power")]
+
+    def is_on(self, port: int):
+        return self._is_on[port]
+
+    def handle_bluetooth_event(self, device: BLEDevice, adv: AdvertisementData):
+        for _, mfr_data in adv.manufacturer_data.items():
+            self._device = device
+            self._is_on[0] = (mfr_data[-1] & 0x2) == 0x2
+            self._is_on[1] = (mfr_data[-1] & 0x1) == 0x1
+
+    async def async_turn_on(self, port: int):
+        if port == 0:
+            msg = self.MSG_LEFT_ON
+        elif port == 1:
+            msg = self.MSG_RIGHT_ON
+        else:
+            assert False
+
+        if await self._send_message(msg):
+            self._is_on[port] = True
+
+    async def async_turn_off(self, port: int):
+        if port == 0:
+            msg = self.MSG_LEFT_OFF
+        elif port == 1:
+            msg = self.MSG_RIGHT_OFF
+        else:
+            assert False
+
+        if await self._send_message(msg):
+            self._is_on[port] = False
 
 
 class GoveePlugPairer:
