@@ -2,7 +2,8 @@
     "domain": "govee-ble-plugs",
     "name": "Govee BLE Plugs",
     "bluetooth": [
-        { "local_name": "ihoment_H5080_*", "connectable": false }
+        { "local_name": "ihoment_H5080_*", "connectable": false },
+        { "local_name": "ihoment_H5082_*", "connectable": false }
     ],
     "codeowners": ["@virtuald"],
     "config_flow": true,

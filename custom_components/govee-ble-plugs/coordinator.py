@@ -31,7 +31,6 @@ class GoveePlugDataUpdateCoordinator(PassiveBluetoothDataUpdateCoordinator):
     ) -> None:
         """Initialize."""
         self.api: GoveePlugApi = api
-        self.data: dict[str, Any] = {}
         self.ble_device = ble_device
         super().__init__(
             hass,
@@ -47,8 +46,5 @@ class GoveePlugDataUpdateCoordinator(PassiveBluetoothDataUpdateCoordinator):
         change: bluetooth.BluetoothChange,
     ) -> None:
         """Handle a Bluetooth event."""
-        if data := self.api.handle_bluetooth_event(
-            service_info.device, service_info.advertisement
-        ):
-            self.data = data
+        self.api.handle_bluetooth_event(service_info.device, service_info.advertisement)
         super()._async_handle_bluetooth_event(service_info, change)
