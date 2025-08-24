@@ -3,15 +3,16 @@
     "name": "Govee BLE Plugs",
     "bluetooth": [
         { "local_name": "ihoment_H5080_*", "connectable": false },
-        { "local_name": "ihoment_H5082_*", "connectable": false }
+        { "local_name": "ihoment_H5082_*", "connectable": false },
+        { "local_name": "GVH5086*", "connectable": false}
     ],
     "codeowners": ["@virtuald"],
     "config_flow": true,
     "dependencies": ["bluetooth"],
-    "documentation": "https://github.com/virtuald/govee_ble_plugs",
+    "documentation": "https://github.com/virtuald/govee-ble-plugs",
     "integration_type": "hub",
     "iot_class": "local_polling",
-    "issue_tracker": "https://github.com/virtuald/govee_ble_plugs/issues",
+    "issue_tracker": "https://github.com/virtuald/govee-ble-plugs/issues",
     "requirements": ["bleak-retry-connector"],
     "version": "0.1.0"
 }
