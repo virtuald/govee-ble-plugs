@@ -4,7 +4,8 @@
     "bluetooth": [
         { "local_name": "ihoment_H5080_*", "connectable": false },
         { "local_name": "ihoment_H5082_*", "connectable": false },
-        { "local_name": "GVH5086*", "connectable": false}
+        { "local_name": "GVH5086*", "connectable": false},
+        { "local_name": "ihoment_H5083_*", "connectable": false }
     ],
     "codeowners": ["@virtuald"],
     "config_flow": true,
