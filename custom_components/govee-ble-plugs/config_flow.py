@@ -84,8 +84,11 @@ class GoveeBlePlugsConfigFlow(ConfigFlow, domain=DOMAIN):
             return self.async_abort(reason="no_devices_found")
 
         if user_input is not None:
-            assert self._discovered_adv is not None
-            self._name = self._discovered_adv.name
+            # Use the device the user picked (not whichever device was scanned last)
+            chosen = self._discovered_advs[user_input[CONF_ADDRESS]]
+            self._discovered_adv = chosen
+            self._ble_device = chosen.device
+            self._name = chosen.name
             self._bdaddr = user_input[CONF_ADDRESS]
             await self.async_set_unique_id(self._bdaddr, raise_on_progress=False)
             self._abort_if_unique_id_configured()

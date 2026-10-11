@@ -30,6 +30,13 @@ With the integration setup, your Govee devices will appear as entities within Ho
 * The installation is done inside [HACS](https://hacs.xyz/) (Home Assistant Community Store). If you don't have HACS, you must install it before adding this integration. [Installation instructions here.](https://hacs.xyz/docs/setup/download)
 * At the present moment this integration has not been published to HACS, but you can still install it as a custom integration. See https://www.hacs.xyz/docs/faq/custom_repositories/ for details
 
+### H5083 pairing
+
+The H5083 encrypts its Bluetooth traffic. When the pairing screen appears, Home Assistant connects
+to the plug and its light starts flashing; press the plug's button, then click Submit. Each pairing
+issues a new auth key, so pairing in Home Assistant stops the Govee app from controlling the plug
+over Bluetooth (and re-pairing in the app stops Home Assistant).
+
 ## Troubleshooting for BLE
 
 If you're facing issues with the integration, consider the following steps:
