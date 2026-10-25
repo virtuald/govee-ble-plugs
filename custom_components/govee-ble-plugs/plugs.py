@@ -371,7 +371,12 @@ class GoveePlugH5086(GoveePlugH508x):
     def handle_bluetooth_event(self, device: BLEDevice, adv: AdvertisementData):
         for _, mfr_data in adv.manufacturer_data.items():
             self._device = device
-            self._is_on = mfr_data[-1] == 0x01
+            # The on/off flag is the 5th byte of the manufacturer data. Older
+            # firmware sends 5 bytes, so it is also the last byte; current
+            # firmware appends a trailing 0x00 (off: ec 00 01 01 00 00,
+            # on: ec 00 01 01 01 00), so reading mfr_data[-1] always gives "off".
+            if len(mfr_data) >= 5:
+                self._is_on = mfr_data[4] == 0x01
 
     async def async_turn_on(self, port: int):
         assert port == 0
